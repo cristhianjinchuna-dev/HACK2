@@ -7,9 +7,9 @@ noticias del mundo y la Gran Saga del Grand Line.
 
 | Nombre | Código |
 |:-------|:-------|
-| COMPLETAR | COMPLETAR |
-| COMPLETAR | COMPLETAR |
-| COMPLETAR | COMPLETAR |
+| Cristhian Gabriel Jinchuña Cama | 202520002 |
+| Mathius Quispe Sicha | 202520058|
+| Eduardo Vila Castellares | 202520004 |
 
 **Tripulación:** Viborex · **Código de equipo:** TEAM-007
 
