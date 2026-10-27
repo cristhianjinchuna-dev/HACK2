@@ -9,6 +9,8 @@ export default function Layout() {
       <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-slate-900 p-3 text-white">
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/wanted">Se Busca</Link>
+        <Link to="/news">Noticias</Link>
+        <Link to="/sagas">Sagas</Link>
         <span className="ml-auto">{team?.name} · {team?.code}</span>
         <button onClick={logout} className="rounded border px-2">Cerrar sesión</button>
       </nav>

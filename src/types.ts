@@ -63,6 +63,7 @@ export interface ApiError {
   traceId: string;
   details?: { field: string; message: string }[];
   retryAfterSeconds?: number;
+  current?: NewsDetail;
 }
 
 
@@ -138,4 +139,104 @@ export interface WantedQuery {
   crewId: string;
   fruit: FruitType | '';
   q: string;
+}
+
+export const NEWS_TYPES: string[] = ['BOUNTY_UPDATE', 'BATTLE', 'MARINE_OPERATION', 'WORLD_GOVERNMENT', 'DISCOVERY'];
+export const NEWS_PRIORITIES: string[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+export const NEWS_STATUSES = ['RUMOR', 'CONFIRMED', 'DEBUNKED'] as const;
+export type NewsStatus = (typeof NEWS_STATUSES)[number];
+
+// Solo un RUMOR se puede verificar como CONFIRMED o DEBUNKED
+export const VERIFY_STATUSES = ['CONFIRMED', 'DEBUNKED'] as const;
+export type VerifyStatus = (typeof VERIFY_STATUSES)[number];
+
+// Una noticia en el feed (NewsItem)
+export interface NewsItem {
+  id: string;
+  type: string;
+  priority: string;
+  status: NewsStatus;
+  title: string;
+  summary: string;
+  source: string;
+  island: string;
+  relatedWanted: { id: string; name: string } | null;
+  publishedAt: string;
+  updatedAt: string;
+  verifiedAt: string | null;
+}
+
+// El detalle trae lo mismo + el cuerpo (NewsDetail)
+export interface NewsDetail extends NewsItem {
+  body: string;
+}
+
+// GET /news/feed (cursor)
+export interface NewsFeed {
+  items: NewsItem[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+// Filtros del feed ('' = sin filtro)
+export interface NewsFilters {
+  type: string;
+  priority: string;
+  status: NewsStatus | '';
+}
+
+// Lo que el feed le pasa al detalle por <Outlet context>
+export interface NewsOutletContext {
+  onNewsUpdated: (news: NewsItem) => void;
+}
+
+// ---------- CP5: Sagas ----------
+// Colores hexadecimales de la saga / etapa
+export interface Palette {
+  background: string;
+  surface: string;
+  primary: string;
+  accent: string;
+  text: string;
+}
+
+// GET /sagas (SagaSummary)
+export interface SagaSummary {
+  id: string;
+  order: number;
+  title: string;
+  subtitle: string;
+  synopsis: string;
+  stageCount: number;
+  totalDistanceNm: number;
+  firstIsland: string;
+  lastIsland: string;
+  palette: Palette;
+}
+
+// Una métrica de la etapa (StageMetric)
+export interface StageMetric {
+  key: string;
+  label: string;
+  value: number | string;
+  unit: string;
+}
+
+// Una etapa de la historia (SagaStage)
+export interface SagaStage {
+  id: string;
+  order: number;
+  slug: string;
+  title: string;
+  narrative: string;
+  island: Record<string, unknown>; // nombre + posición en el mapa (se lee en mapUtils.ts)
+  palette: Palette;
+  metrics: StageMetric[];
+}
+
+// GET /sagas/{id}/story (SagaStory)
+export interface SagaStoryResponse {
+  saga: SagaSummary;
+  map: Record<string, unknown>;
+  stages: SagaStage[];
 }

@@ -6,6 +6,10 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Wanted from './pages/Wanted';
 import WantedDetail from './pages/WantedDetail';
+import News from './pages/News';
+import NewsDetail from './pages/NewsDetail';
+import Sagas from './pages/Sagas';
+import SagaStory from './pages/SagaStory';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -21,10 +25,17 @@ export default function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* El detalle es HIJO del listado: el listado no se desmonta al abrirlo */}
           <Route path="/wanted" element={<Wanted />}>
             <Route path=":id" element={<WantedDetail />} />
           </Route>
+
+          <Route path="/news" element={<News />}>
+            <Route path=":id" element={<NewsDetail />} />
+          </Route>
+
+          {/* CP5 */}
+          <Route path="/sagas" element={<Sagas />} />
+          <Route path="/sagas/:id" element={<SagaStory />} />
         </Route>
       </Route>
 
