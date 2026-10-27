@@ -1,32 +1,70 @@
-# React + TypeScript + Vite
+# Log Pose Console — Hackathon One Piece
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Consola en React + TypeScript para la Guild de Cazarrecompensas: carteles de "Se Busca",
+noticias del mundo y la Gran Saga del Grand Line.
 
-Currently, two official plugins are available:
+## Integrantes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Nombre | Código |
+|:-------|:-------|
+| COMPLETAR | COMPLETAR |
+| COMPLETAR | COMPLETAR |
+| COMPLETAR | COMPLETAR |
 
-## React Compiler
+**Tripulación:** Viborex · **Código de equipo:** TEAM-007
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Requisitos
 
-## Expanding the Oxlint configuration
+- Node 24 LTS
+- npm
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Cómo ejecutar
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # build de producción
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Variables de entorno
+
+Crear un archivo `.env` en la raíz:
+
+```properties
+VITE_API_BASE_URL=https://logpose-api-jg7f.onrender.com/api/v1
+```
+
+La app lee la URL base solo desde esa variable.
+
+## Stack
+
+React · TypeScript estricto · Vite · React Router · Tailwind CSS · Axios
+
+## Estructura
+
+```
+src/
+  api.ts                 instancia de Axios, interceptores, errores y getPaginated
+  types.ts               tipos del contrato (Swagger)
+  services/              consultas al backend (auth, dashboard, wanted, news, sagas)
+  auth/                  AuthContext (sesión) y ProtectedRoute (rutas privadas)
+  components/            Layout y SearchInput (búsqueda con debounce)
+  pages/                 pantallas de cada checkpoint
+  story/                 View Transitions y posiciones del mapa de la saga
+```
+
+## Decisiones técnicas
+
+- **Sesión:** el JWT se guarda en `sessionStorage`. Un request interceptor lo envía en cada
+  petición y un response interceptor cierra la sesión ante un 401. Al recargar, la sesión se
+  valida con `/auth/me` sin mostrar el login.
+- **Rutas privadas:** `ProtectedRoute` redirige al login guardando la ruta original para volver
+  exactamente ahí.
+- **Se Busca:** paginación del servidor; filtros, búsqueda, orden, tamaño y página viven en la
+  URL. Búsqueda con debounce de 300 ms. Las respuestas antiguas se cancelan con `AbortController`.
+- **Noticias:** infinite scroll por cursor con `IntersectionObserver`, una sola carga en vuelo,
+  deduplicación por ID y descarte de respuestas de filtros anteriores. El detalle es una ruta
+  hija, así el feed conserva su posición.
+- **Saga:** scrollytelling con mapa persistente, etapa activa en la URL (`?stage=`), CSS
+  Scroll-driven Animations con fallback, View Transition API con fallback, soporte para
+  `prefers-reduced-motion` y navegación por teclado.
