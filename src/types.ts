@@ -37,10 +37,20 @@ export interface LogPose {
 
 // GET /dashboard/summary
 // "wanted" y "crews" son objetos con contadores: se muestran tal como llegan
+// GET /dashboard/summary
 export interface DashboardSummary {
   team: Team;
-  wanted: Record<string, unknown>;
-  crews: Record<string, unknown>;
+  wanted: {
+    total: number;
+    totalBounty: number;
+    averageBounty: number;
+    byStatus: Record<string, number>; // { AT_LARGE: 81, CAPTURED: 32, MISSING: 24 }
+    byFruit: Record<string, number>;  // { PARAMECIA: 32, ZOAN: 22, LOGIA: 14, NONE: 69 }
+  };
+  crews: {
+    total: number;
+    mostWanted: { id: string; name: string; shipName: string; memberCount: number; totalBounty: number } | null;
+  };
   topBounties: { id: string; name: string; bounty: number }[];
   generatedAt: string;
 }

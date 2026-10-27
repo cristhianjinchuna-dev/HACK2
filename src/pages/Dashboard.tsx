@@ -37,6 +37,10 @@ export default function Dashboard() {
   }
   // Loading
   if (!summary || !logPose) return <p>Cargando...</p>;
+  // Vacío
+  if (summary.wanted.total === 0) return <p>Esta tripulación aún no tiene carteles.</p>;
+
+  const { wanted, crews } = summary;
 
   return (
     <section className="space-y-6">
@@ -49,38 +53,50 @@ export default function Dashboard() {
         {logPose.unlockedAt && <p className="text-sm">Desbloqueado: {new Date(logPose.unlockedAt).toLocaleString()}</p>}
       </article>
 
-      {/* Indicadores de carteles y tripulaciones (los campos vienen del backend) */}
+      {/* KPIs principales */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <p className="rounded border bg-white p-3">Carteles: <b>{wanted.total}</b></p>
+        <p className="rounded border bg-white p-3">Recompensa total: <b>฿{wanted.totalBounty.toLocaleString()}</b></p>
+        <p className="rounded border bg-white p-3">Promedio: <b>฿{wanted.averageBounty.toLocaleString()}</b></p>
+        <p className="rounded border bg-white p-3">Tripulaciones: <b>{crews.total}</b></p>
+      </div>
+
+      {/* Conteos por estado y por fruta: las llaves vienen de la respuesta */}
       <div className="grid gap-4 md:grid-cols-2">
         {[
-          { title: 'Carteles', data: summary.wanted },
-          { title: 'Tripulaciones', data: summary.crews },
+          { title: 'Por estado', data: wanted.byStatus },
+          { title: 'Por fruta del diablo', data: wanted.byFruit },
         ].map((block) => (
           <article key={block.title} className="rounded border bg-white p-4">
             <h2 className="mb-2 font-semibold">{block.title}</h2>
-            <dl className="grid grid-cols-2 gap-1 text-sm">
-              {Object.entries(block.data).map(([key, value]) => (
-                <div key={key} className="contents">
-                  <dt className="text-gray-500">{key}</dt>
-                  <dd className="font-medium">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</dd>
-                </div>
+            <ul>
+              {Object.entries(block.data).map(([key, count]) => (
+                <li key={key}>{key}: {count}</li>
               ))}
-            </dl>
+            </ul>
           </article>
         ))}
       </div>
 
-      {/* Mayores recompensas, con estado vacío */}
+      {/* Tripulación más buscada (puede no existir) */}
+      {crews.mostWanted && (
+        <article className="rounded border bg-white p-4">
+          <h2 className="mb-1 font-semibold">Tripulación más buscada</h2>
+          <p>
+            {crews.mostWanted.name} · barco {crews.mostWanted.shipName} · {crews.mostWanted.memberCount} miembros ·
+            ฿{crews.mostWanted.totalBounty.toLocaleString()}
+          </p>
+        </article>
+      )}
+
+      {/* Mayores recompensas */}
       <article className="rounded border bg-white p-4">
         <h2 className="mb-2 font-semibold">Mayores recompensas</h2>
-        {summary.topBounties.length === 0 ? (
-          <p className="text-gray-500">Aún no hay carteles.</p>
-        ) : (
-          <ul>
-            {summary.topBounties.map((b) => (
-              <li key={b.id}>{b.name}: ฿{b.bounty.toLocaleString()}</li>
-            ))}
-          </ul>
-        )}
+        <ul>
+          {summary.topBounties.map((b) => (
+            <li key={b.id}>{b.name}: ฿{b.bounty.toLocaleString()}</li>
+          ))}
+        </ul>
       </article>
 
       <p className="text-sm text-gray-500">Generado: {new Date(summary.generatedAt).toLocaleString()}</p>
